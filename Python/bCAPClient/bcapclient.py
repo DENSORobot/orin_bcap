@@ -543,6 +543,9 @@ class BCAPClient:
       if HResult.failed(hresult):
         raise ORiNException(hresult)
 
+    if len(retvals) == 0:
+      retvals.append(None)
+      
     return retvals
 
   def _bcap_send(self, serial, version, funcid, args):
@@ -726,18 +729,21 @@ class BCAPClient:
     return (serial, version, hresult, retvals)
 
   def _recv_with_select(self, len_recv):
-    (reads, writes, errors) = select.select(
-      [self._sock], [], [], self._timeout)
+    buf_recv = b''
+    while True:
+      (reads, writes, errors) = select.select(
+        [self._sock], [], [], self._timeout)
 
-    if (len(reads) == 0) or (reads[0] != self._sock):
-      raise ORiNException(HResult.E_TIMEOUT)
+      if len(reads) == 0:
+        raise ORiNException(HResult.E_TIMEOUT)
 
-    buf = self._sock.recv(len_recv)
+      buf_recv = b''.join([buf_recv,
+        self._sock.recv(len_recv)])
 
-    if len(buf) < len_recv:
-      raise ORiNException(HResult.E_TIMEOUT)
+      if len(buf_recv) >= len_recv:
+        break
 
-    return buf
+    return buf_recv
 
   def _deserialize(self, buf):
     format = "<bIHhiH%dsb" % (len(buf) - 16)
