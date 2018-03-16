@@ -1,18 +1,19 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(bcap_core)
 
-find_package(catkin REQUIRED)
 
-catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES bcap_client bcap_server tpcomm rac_string
-)
+if(NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING
+		"Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel."
+		FORCE)
+endif(NOT CMAKE_BUILD_TYPE)
 
 ###########
 ## Build ##
 ###########
 
 # Options
+option  (_USE_CATKIN		 "Use Catkin for installation" ON)
 option  (_USE_LINUX_API      "Use Linux API"   ON)
 option  (_DN_USE_VARIANT_API "Use VARIANT API" ON)
 option  (_DN_USE_BSTR_API    "Use BSTR API" ON)
@@ -20,6 +21,15 @@ option  (_DN_USE_BSTR_API    "Use BSTR API" ON)
 message (STATUS "_USE_LINUX_API=${_USE_LINUX_API}")
 message (STATUS "_DN_USE_VARIANT_API=${_DN_USE_VARIANT_API}")
 message (STATUS "_DN_USE_BSTR_API=${_DN_USE_BSTR_API}")
+
+if(${_USE_CATKIN})
+find_package(catkin REQUIRED)
+catkin_package(
+  INCLUDE_DIRS include
+  LIBRARIES bcap_client bcap_server tpcomm rac_string
+)
+endif(${_USE_CATKIN})
+
 
 # Add definitions
 if(${_USE_LINUX_API})
@@ -102,13 +112,13 @@ add_library(rac_string
 ## Install ##
 #############
 
+if(${_USE_CATKIN})
 # libraries
 install(TARGETS bcap_client bcap_server tpcomm rac_string
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-
 # headers
 install(DIRECTORY include/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
@@ -116,3 +126,17 @@ install(DIRECTORY include/
   PATTERN "bcap_core" EXCLUDE
   PATTERN ".svn" EXCLUDE
 )
+else()
+# libraries
+install(TARGETS bcap_client bcap_server tpcomm rac_string
+	LIBRARY DESTINATION lib
+)
+# headers
+install(
+  DIRECTORY include
+  DESTINATION include/orin_bcap
+  PATTERN "include/*.h" # TODO figure out how to avoid the extra include/ directory level in this pattern. This may require CMakeLists.txt files in the subdirectories.
+  PATTERN "bcap_core" EXCLUDE
+  PATTERN ".svn" EXCLUDE
+)
+endif(${_USE_CATKIN})
