@@ -1,0 +1,3 @@
+*.so
+CMakeFiles*
+CMakeCache
