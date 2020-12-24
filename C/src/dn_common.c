@@ -227,9 +227,9 @@ SafeArrayDestroy(SAFEARRAY *psa)
           }
           break;
         default:
-          free(psa->pvData);
           break;
       }
+      free(psa->pvData);
       psa->pvData = NULL;
     }
     free(psa);
