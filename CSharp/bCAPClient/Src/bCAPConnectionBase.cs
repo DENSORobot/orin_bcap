@@ -21,50 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+namespace ORiN2.bCAP;
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ORiN2.Library;
-
-namespace ORiN2.bCAP
+internal abstract class bCAPConnectionBase : IDisposable
 {
-    abstract class bCAPConnectionBase : IDisposable
-    {
-        protected ushort m_iSerial = 1;
-        protected int m_iTimeout = 0;
-        protected int m_iRetry = 0;
+    protected ushort m_iSerial = 1;
+    protected int m_iTimeout = 0;
+    protected int m_iRetry = 0;
 
-        public virtual void Connect(
-            ConnOptEther optEth, int iTimeout, int iRetry) { }
+    public virtual void Connect(
+        ConnOptEther optEth, int iTimeout, int iRetry)
+    { }
 
-        public virtual void Dispose() { }
+    public virtual void Dispose() { }
 
-        public virtual int GetTimeout()
-        {
-            return m_iTimeout;
-        }
+    public virtual int GetTimeout() => m_iTimeout;
 
-        public virtual void SetTimeout(int iTimeout)
-        {
-            m_iTimeout = iTimeout;
-        }
+    public virtual void SetTimeout(int iTimeout) => m_iTimeout = iTimeout;
 
-        public virtual int GetRetry()
-        {
-            return m_iRetry;
-        }
+    public virtual int GetRetry() => m_iRetry;
 
-        public virtual void SetRetry(int iRetry)
-        {
-            m_iRetry = iRetry;
-        }
+    public virtual void SetRetry(int iRetry) => m_iRetry = iRetry;
 
-        public abstract void SendPacket(bCAPPacket send);
-        public abstract bCAPPacket RecvPacket(UInt16 iSerial);
-        public abstract bCAPPacket SendAndRecv(bCAPPacket send);
-    }
+    public abstract void SendPacket(bCAPPacket send);
+    public abstract bCAPPacket RecvPacket(ushort iSerial);
+    public abstract bCAPPacket SendAndRecv(bCAPPacket send);
 }

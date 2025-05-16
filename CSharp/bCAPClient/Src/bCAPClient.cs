@@ -21,87 +21,62 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+namespace ORiN2.bCAP;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using ORiN2.Library;
-
-namespace ORiN2.bCAP
+public partial class bCAPClient : IDisposable
 {
-    public partial class bCAPClient : IDisposable
+    private bCAPConnectionBase m_conn;
+
+    public bCAPClient(string strConn, int iTimeout, int iRetry)
     {
-        private bCAPConnectionBase m_conn;
+        if (strConn.Length < 3)
+            throw new ArgumentException();
 
-        public bCAPClient(string strConn, int iTimeout, int iRetry)
+        var strOpt = strConn[..3].ToLower();
+        m_conn = strOpt switch
         {
-            if (strConn.Length < 3) throw new ArgumentException();
+            "tcp" => new bCAPConnectionTCP(),
+            "udp" => new bCAPConnectionUDP(),
+            _ => throw new ArgumentException(),
+        };
 
-            string strOpt = strConn.Substring(0, 3).ToLower();
-            switch (strOpt)
-            {
-                case "tcp":
-                    m_conn = new bCAPConnectionTCP();
-                    break;
-                case "udp":
-                    m_conn = new bCAPConnectionUDP();
-                    break;
-                default:
-                    throw new ArgumentException();
-            }
+        // パラメータ解析
+        var optEth = ConnOptParser.ParseEtherOption(strConn);
 
-            // パラメータ解析
-            var optEth = ConnOptParser.ParseEtherOption(strConn);
+        // 接続
+        m_conn.Connect(optEth, iTimeout, iRetry);
+    }
 
-            // 接続
-            m_conn.Connect(optEth, iTimeout, iRetry);
-        }
-
-        public void Dispose()
+    public void Dispose()
+    {
+        if (m_conn != null)
         {
-            if (m_conn != null)
-            {
-                m_conn.Dispose();
-                m_conn = null;
-            }
-        }
-
-        public int GetTimeout()
-        {
-            int retval = -1;
-            if (m_conn != null)
-            {
-                retval = m_conn.GetTimeout();
-            }
-            return retval;
-        }
-
-        public void SetTimeout(int iTimeout)
-        {
-            if (m_conn != null)
-            {
-                m_conn.SetTimeout(iTimeout);
-            }
-        }
-
-        public int GetRetry()
-        {
-            int retval = -1;
-            if (m_conn != null)
-            {
-                retval = m_conn.GetRetry();
-            }
-            return retval;
-        }
-
-        public void SetRetry(int iRetry)
-        {
-            if (m_conn != null)
-            {
-                m_conn.SetRetry(iRetry);
-            }
+            m_conn.Dispose();
+            m_conn = null;
         }
     }
+
+    public int GetTimeout()
+    {
+        var retval = -1;
+        if (m_conn != null)
+        {
+            retval = m_conn.GetTimeout();
+        }
+        return retval;
+    }
+
+    public void SetTimeout(int iTimeout) => m_conn?.SetTimeout(iTimeout);
+
+    public int GetRetry()
+    {
+        var retval = -1;
+        if (m_conn != null)
+        {
+            retval = m_conn.GetRetry();
+        }
+        return retval;
+    }
+
+    public void SetRetry(int iRetry) => m_conn?.SetRetry(iRetry);
 }

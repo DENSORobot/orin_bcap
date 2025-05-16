@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyOriginatorKeyFile>Properties\bCAPClient.snk</AssemblyOriginatorKeyFile>
+		<AssemblyTitle>bCAPClient</AssemblyTitle>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<Company>DENSO WAVE INCORPORATED</Company>
+		<Copyright>Copyright © 2015 DENSO WAVE INCORPORATED</Copyright>
+		<DebugType>embedded</DebugType>
+		<Description>Copyright © 2015 DENSO WAVE INCORPORATED. All Right Reserved</Description>
+		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+		<FileVersion>1.0.0.0</FileVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+		<Product>bCAPClient</Product>
+		<RootNamespace>ORiN2.bCAP</RootNamespace>
+		<SignAssembly>true</SignAssembly>
+		<TargetFramework>net9.0</TargetFramework>
+		<Version>1.0.0.0</Version>
+	</PropertyGroup>
+</Project>

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bCAPClient", "bCAPClient.csproj", "{D665323F-19B6-4221-98B2-CC9B83C0C8C9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D665323F-19B6-4221-98B2-CC9B83C0C8C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D665323F-19B6-4221-98B2-CC9B83C0C8C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D665323F-19B6-4221-98B2-CC9B83C0C8C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D665323F-19B6-4221-98B2-CC9B83C0C8C9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FFE58D3C-CF87-4E42-96A2-FD8501C6DBEA}
+	EndGlobalSection
+EndGlobal

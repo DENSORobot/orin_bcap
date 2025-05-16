@@ -21,38 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace ORiN2.bCAP
+namespace ORiN2.bCAP;
+
+internal class bCAPPacket
 {
-    class bCAPPacket
+    public ushort iSerial;
+    public ushort iReserv;
+    public int iFuncID;
+    public ArrayList aryArgs;
+
+    public bCAPPacket()
     {
-        public UInt16 iSerial;
-        public UInt16 iReserv;
-        public Int32 iFuncID;
-        public ArrayList aryArgs;
+        iSerial = 0;
+        iReserv = 0;
+        iFuncID = 0;
+        aryArgs = [];
+    }
 
-        public bCAPPacket()
+    public bCAPPacket(int FuncID, params object[] Args) : this()
+    {
+        iFuncID = FuncID;
+
+        foreach (var obj in Args)
         {
-            this.iSerial = 0;
-            this.iReserv = 0;
-            this.iFuncID = 0;
-            this.aryArgs = new ArrayList();
-        }
-
-        public bCAPPacket(Int32 FuncID, params object[] Args) : this()
-        {
-            this.iFuncID = FuncID;
-
-            foreach (object obj in Args)
-            {
-                this.aryArgs.Add(obj);
-            }
+            _ = aryArgs.Add(obj);
         }
     }
 }

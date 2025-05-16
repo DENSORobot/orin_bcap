@@ -1,0 +1,5 @@
+Src/*.csproj.user
+Src/.vs
+Src/bin
+Src/obj
+Src/Properties/PublishProfiles/*.pubxml.user

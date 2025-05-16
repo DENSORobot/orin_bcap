@@ -21,242 +21,224 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace ORiN2.bCAP
+namespace ORiN2.bCAP;
+
+internal static class bCAPByteConverter
 {
-    static class bCAPByteConverter
+    private static readonly Dictionary<Type, Func<byte[], object>> m_byt2val;
+    private static readonly Dictionary<Type, Func<object, byte[]>> m_val2byt;
+
+    static bCAPByteConverter()
     {
-        private static Dictionary<Type, Func<byte[], object>> m_byt2val;
-        private static Dictionary<Type, Func<object, byte[]>> m_val2byt;
-
-        static bCAPByteConverter()
+        m_byt2val = new Dictionary<Type, Func<byte[], object>>
         {
-            m_byt2val = new Dictionary<Type, Func<byte[], object>>();
-            m_byt2val.Add(typeof(Int16), Byte2Short);
-            m_byt2val.Add(typeof(Int32), Byte2Int);
-            m_byt2val.Add(typeof(Single), Byte2Single);
-            m_byt2val.Add(typeof(Double), Byte2Double);
-            m_byt2val.Add(typeof(Decimal), Byte2CY);
-            m_byt2val.Add(typeof(DateTime), Byte2Date);
-            m_byt2val.Add(typeof(String), Byte2String);
-            m_byt2val.Add(typeof(Boolean), Byte2Bool);
-            m_byt2val.Add(typeof(UInt16), Byte2UShort);
-            m_byt2val.Add(typeof(UInt32), Byte2UInt);
-            m_byt2val.Add(typeof(Int64), Byte2Long);
-            m_byt2val.Add(typeof(UInt64), Byte2ULong);
+            { typeof(short), Byte2Short },
+            { typeof(int), Byte2Int },
+            { typeof(float), Byte2Single },
+            { typeof(double), Byte2Double },
+            { typeof(decimal), Byte2CY },
+            { typeof(DateTime), Byte2Date },
+            { typeof(string), Byte2String },
+            { typeof(bool), Byte2Bool },
+            { typeof(ushort), Byte2UShort },
+            { typeof(uint), Byte2UInt },
+            { typeof(long), Byte2Long },
+            { typeof(ulong), Byte2ULong }
+        };
 
-            m_val2byt = new Dictionary<Type, Func<object, byte[]>>();
-            m_val2byt.Add(typeof(Int16), Short2Byte);
-            m_val2byt.Add(typeof(Int32), Int2Byte);
-            m_val2byt.Add(typeof(Single), Single2Byte);
-            m_val2byt.Add(typeof(Double), Double2Byte);
-            m_val2byt.Add(typeof(Decimal), CY2Byte);
-            m_val2byt.Add(typeof(DateTime), Date2Byte);
-            m_val2byt.Add(typeof(String), String2Byte);
-            m_val2byt.Add(typeof(Boolean), Bool2Byte);
-            m_val2byt.Add(typeof(UInt16), UShort2Byte);
-            m_val2byt.Add(typeof(UInt32), UInt2Byte);
-            m_val2byt.Add(typeof(Int64), Long2Byte);
-            m_val2byt.Add(typeof(UInt64), ULong2Byte);
-        }
-        
-        /* byte[] => object */
-        public static object Byte2Value(byte[] arg, Type t){
-            return m_byt2val[t](arg);
-        }
+        m_val2byt = new Dictionary<Type, Func<object, byte[]>>
+        {
+            { typeof(short), Short2Byte },
+            { typeof(int), Int2Byte },
+            { typeof(float), Single2Byte },
+            { typeof(double), Double2Byte },
+            { typeof(decimal), CY2Byte },
+            { typeof(DateTime), Date2Byte },
+            { typeof(string), String2Byte },
+            { typeof(bool), Bool2Byte },
+            { typeof(ushort), UShort2Byte },
+            { typeof(uint), UInt2Byte },
+            { typeof(long), Long2Byte },
+            { typeof(ulong), ULong2Byte }
+        };
+    }
 
-        /* object => byte[] */
-        public static byte[] Value2Byte(object arg)
-        {
-            return m_val2byt[arg.GetType()](arg);
-        }
+    /* byte[] => object */
+    public static object Byte2Value(byte[] arg, Type t) => m_byt2val[t](arg);
 
-        /* byte[] => Int16 */
-        private static object Byte2Short(byte[] arg)
-        {
-            bCAPEndian(arg);
-            return BitConverter.ToInt16(arg, 0);
-        }
+    /* object => byte[] */
+    public static byte[] Value2Byte(object arg) => m_val2byt[arg.GetType()](arg);
 
-        /* Int16 => byte[] */
-        private static byte[] Short2Byte(object arg)
-        {
-            byte[] bRet = BitConverter.GetBytes((Int16)arg);
-            bCAPEndian(bRet);
-            return bRet;
-        }
+    /* byte[] => Int16 */
+    private static object Byte2Short(byte[] arg)
+    {
+        bCAPEndian(arg);
+        return BitConverter.ToInt16(arg, 0);
+    }
 
-        /* byte[] => Int32 */
-        private static object Byte2Int(byte[] arg)
-        {
-            bCAPEndian(arg);
-            return BitConverter.ToInt32(arg, 0);
-        }
+    /* Int16 => byte[] */
+    private static byte[] Short2Byte(object arg)
+    {
+        var bRet = BitConverter.GetBytes((short)arg);
+        bCAPEndian(bRet);
+        return bRet;
+    }
 
-        /* Int32 => byte[] */
-        private static byte[] Int2Byte(object arg)
-        {
-            byte[] bRet = BitConverter.GetBytes((Int32)arg);
-            bCAPEndian(bRet);
-            return bRet;
-        }
+    /* byte[] => Int32 */
+    private static object Byte2Int(byte[] arg)
+    {
+        bCAPEndian(arg);
+        return BitConverter.ToInt32(arg, 0);
+    }
 
-        /* byte[] => Single */
-        private static object Byte2Single(byte[] arg)
-        {
-            bCAPEndian(arg);
-            return BitConverter.ToSingle(arg, 0);
-        }
+    /* Int32 => byte[] */
+    private static byte[] Int2Byte(object arg)
+    {
+        var bRet = BitConverter.GetBytes((int)arg);
+        bCAPEndian(bRet);
+        return bRet;
+    }
 
-        /* Single => byte[] */
-        private static byte[] Single2Byte(object arg)
-        {
-            byte[] bRet = BitConverter.GetBytes((Single)arg);
-            bCAPEndian(bRet);
-            return bRet;
-        }
+    /* byte[] => Single */
+    private static object Byte2Single(byte[] arg)
+    {
+        bCAPEndian(arg);
+        return BitConverter.ToSingle(arg, 0);
+    }
 
-        /* byte[] => Double */
-        private static object Byte2Double(byte[] arg)
-        {
-            bCAPEndian(arg);
-            return BitConverter.ToDouble(arg, 0);
-        }
+    /* Single => byte[] */
+    private static byte[] Single2Byte(object arg)
+    {
+        var bRet = BitConverter.GetBytes((float)arg);
+        bCAPEndian(bRet);
+        return bRet;
+    }
 
-        /* Double => byte[] */
-        private static byte[] Double2Byte(object arg)
-        {
-            byte[] bRet = BitConverter.GetBytes((Double)arg);
-            bCAPEndian(bRet);
-            return bRet;
-        }
+    /* byte[] => Double */
+    private static object Byte2Double(byte[] arg)
+    {
+        bCAPEndian(arg);
+        return BitConverter.ToDouble(arg, 0);
+    }
 
-        /* byte[] => Decimal */
-        private static object Byte2CY(byte[] arg)
-        {
-            bCAPEndian(arg);
-            return new Decimal(BitConverter.ToInt64(arg, 0));
-        }
+    /* Double => byte[] */
+    private static byte[] Double2Byte(object arg)
+    {
+        var bRet = BitConverter.GetBytes((double)arg);
+        bCAPEndian(bRet);
+        return bRet;
+    }
 
-        /* Decimal => byte[] */
-        private static byte[] CY2Byte(object arg)
-        {
-            byte[] bRet = BitConverter.GetBytes((Int64)(Decimal)arg);
-            bCAPEndian(bRet);
-            return bRet;
-        }
+    /* byte[] => Decimal */
+    private static object Byte2CY(byte[] arg)
+    {
+        bCAPEndian(arg);
+        return new decimal(BitConverter.ToInt64(arg, 0));
+    }
 
-        /* byte[] => Date */
-        private static object Byte2Date(byte[] arg)
-        {
-            bCAPEndian(arg);
-            return DateTime.FromOADate(BitConverter.ToDouble(arg, 0));
-        }
+    /* Decimal => byte[] */
+    private static byte[] CY2Byte(object arg)
+    {
+        var bRet = BitConverter.GetBytes((long)(decimal)arg);
+        bCAPEndian(bRet);
+        return bRet;
+    }
 
-        /* Date => byte[] */
-        private static byte[] Date2Byte(object arg)
-        {
-            byte[] bRet = BitConverter.GetBytes(((DateTime)arg).ToOADate());
-            bCAPEndian(bRet);
-            return bRet;
-        }
+    /* byte[] => Date */
+    private static object Byte2Date(byte[] arg)
+    {
+        bCAPEndian(arg);
+        return DateTime.FromOADate(BitConverter.ToDouble(arg, 0));
+    }
 
-        /* byte[] => String */
-        private static object Byte2String(byte[] arg)
-        {
-            return Encoding.Unicode.GetString(arg);
-        }
+    /* Date => byte[] */
+    private static byte[] Date2Byte(object arg)
+    {
+        var bRet = BitConverter.GetBytes(((DateTime)arg).ToOADate());
+        bCAPEndian(bRet);
+        return bRet;
+    }
 
-        /* String => byte[] */
-        private static byte[] String2Byte(object arg)
-        {
-            return Encoding.Unicode.GetBytes((String)arg);
-        }
+    /* byte[] => String */
+    private static object Byte2String(byte[] arg) => Encoding.Unicode.GetString(arg);
 
-        /* byte[] => Boolean */
-        private static object Byte2Bool(byte[] arg)
-        {
-            return (BitConverter.ToInt16(arg, 0) != 0);
-        }
+    /* String => byte[] */
+    private static byte[] String2Byte(object arg) => Encoding.Unicode.GetBytes((string)arg);
 
-        /* Boolean => byte[] */
-        private static byte[] Bool2Byte(object arg)
-        {
-            return BitConverter.GetBytes((Int16)((Boolean)arg ? -1 : 0));
-        }
+    /* byte[] => Boolean */
+    private static object Byte2Bool(byte[] arg) => BitConverter.ToInt16(arg, 0) != 0;
 
-        /* byte[] => UInt16 */
-        private static object Byte2UShort(byte[] arg)
-        {
-            bCAPEndian(arg);
-            return BitConverter.ToUInt16(arg, 0);
-        }
+    /* Boolean => byte[] */
+    private static byte[] Bool2Byte(object arg) => BitConverter.GetBytes((short)((bool)arg ? -1 : 0));
 
-        /* UInt16 => byte[] */
-        private static byte[] UShort2Byte(object arg)
-        {
-            byte[] bRet = BitConverter.GetBytes((UInt16)arg);
-            bCAPEndian(bRet);
-            return bRet;
-        }
+    /* byte[] => UInt16 */
+    private static object Byte2UShort(byte[] arg)
+    {
+        bCAPEndian(arg);
+        return BitConverter.ToUInt16(arg, 0);
+    }
 
-        /* byte[] => UInt32 */
-        private static object Byte2UInt(byte[] arg)
-        {
-            bCAPEndian(arg);
-            return BitConverter.ToUInt32(arg, 0);
-        }
+    /* UInt16 => byte[] */
+    private static byte[] UShort2Byte(object arg)
+    {
+        var bRet = BitConverter.GetBytes((ushort)arg);
+        bCAPEndian(bRet);
+        return bRet;
+    }
 
-        /* UInt32 => byte[] */
-        private static byte[] UInt2Byte(object arg)
-        {
-            byte[] bRet = BitConverter.GetBytes((UInt32)arg);
-            bCAPEndian(bRet);
-            return bRet;
-        }
+    /* byte[] => UInt32 */
+    private static object Byte2UInt(byte[] arg)
+    {
+        bCAPEndian(arg);
+        return BitConverter.ToUInt32(arg, 0);
+    }
 
-        /* byte[] => Int64 */
-        private static object Byte2Long(byte[] arg)
-        {
-            bCAPEndian(arg);
-            return BitConverter.ToInt64(arg, 0);
-        }
-        
-        /* Int64 => byte[] */
-        private static byte[] Long2Byte(object arg)
-        {
-            byte[] bRet = BitConverter.GetBytes((Int64)arg);
-            bCAPEndian(bRet);
-            return bRet;
-        }
+    /* UInt32 => byte[] */
+    private static byte[] UInt2Byte(object arg)
+    {
+        var bRet = BitConverter.GetBytes((uint)arg);
+        bCAPEndian(bRet);
+        return bRet;
+    }
 
-        /* byte[] => UInt64 */
-        private static object Byte2ULong(byte[] arg)
-        {
-            bCAPEndian(arg);
-            return BitConverter.ToUInt64(arg, 0);
-        }
+    /* byte[] => Int64 */
+    private static object Byte2Long(byte[] arg)
+    {
+        bCAPEndian(arg);
+        return BitConverter.ToInt64(arg, 0);
+    }
 
-        /* UInt64 => byte[] */
-        private static byte[] ULong2Byte(object arg)
-        {
-            byte[] bRet = BitConverter.GetBytes((UInt64)arg);
-            bCAPEndian(bRet);
-            return bRet;
-        }
+    /* Int64 => byte[] */
+    private static byte[] Long2Byte(object arg)
+    {
+        var bRet = BitConverter.GetBytes((long)arg);
+        bCAPEndian(bRet);
+        return bRet;
+    }
 
-        /* bCAP Endian <=> PC Endian */
-        private static void bCAPEndian(byte[] arg)
+    /* byte[] => UInt64 */
+    private static object Byte2ULong(byte[] arg)
+    {
+        bCAPEndian(arg);
+        return BitConverter.ToUInt64(arg, 0);
+    }
+
+    /* UInt64 => byte[] */
+    private static byte[] ULong2Byte(object arg)
+    {
+        var bRet = BitConverter.GetBytes((ulong)arg);
+        bCAPEndian(bRet);
+        return bRet;
+    }
+
+    /* bCAP Endian <=> PC Endian */
+    private static void bCAPEndian(byte[] arg)
+    {
+        if (!BitConverter.IsLittleEndian)
         {
-            if (!BitConverter.IsLittleEndian)
-            {
-                Array.Reverse(arg);
-            }
+            Array.Reverse(arg);
         }
     }
 }
